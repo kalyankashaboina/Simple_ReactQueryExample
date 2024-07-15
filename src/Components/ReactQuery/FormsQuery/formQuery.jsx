@@ -1,9 +1,13 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import {useMutation ,useQueryClient } from "react-query";
 import { addData, updatePost } from "../Apis/apis";
+import { useLocation } from "react-router-dom";
 // import { useMutation, useQueryClient } from "@tanstack/react-query";
 
 function FormQuery() {
+
+  const location=useLocation()
+  console.log("location ",location.state)
   const [user, setUser] = useState({
     id: "",
     title: "",
@@ -12,6 +16,13 @@ function FormQuery() {
 
   const queryClient =useQueryClient()
   const [selectedItem, setSelectedItem] = useState(null); 
+
+  useEffect(() => {
+    if (location.state && location.state.updatedPost) {
+      setUser(location.state.updatedPost);
+      setSelectedItem(location.state.updatedPost);
+    }
+  }, [location.state]);
 
   const addItemMutation = useMutation(addData, {
     onSuccess: () => {
@@ -33,9 +44,11 @@ console.log(user);
 
 
 
+
 const handleUpdate = (item) => {
   setSelectedItem(item); 
   setUser(item); 
+  console.log("updater",item)
 };
 
 const handleSubmit = (e) => {
@@ -51,6 +64,8 @@ const handleSubmit = (e) => {
     
     setUser({ id: "", title: "", views: "" });
 };
+
+
 
   return (
     <div>
@@ -89,7 +104,7 @@ const handleSubmit = (e) => {
           />
         </div>
 
-        <input type="submit" value={"add"} />
+        <input type="submit" value={selectedItem ? "Update" : "Add"} />
       </form>
     </div>
   );

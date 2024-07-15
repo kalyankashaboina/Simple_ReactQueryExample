@@ -3,10 +3,12 @@ import React from "react";
 import { useMutation, useQuery, useQueryClient } from "react-query";
 // import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { deleteData, fetchDatas, updatePost } from "../Apis/apis";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { Button } from "react-bootstrap";
 
 function QueryData() {
+
+  const navigate=useNavigate()
   const { data: users, isLoading, error } = useQuery("users", fetchDatas);
   console.log("hello im from  data page", users);
   const queryClient = useQueryClient();
@@ -24,7 +26,9 @@ function QueryData() {
     deleteMutation.mutate(id);
     console.log(id);
   };
+  
 
+  // updating the json throgh this function
   const updateMutation = useMutation({
     mutationFn: updatePost,
     onSuccess: () => {
@@ -33,16 +37,22 @@ function QueryData() {
   });
 
   const handleUpadte = (updatedPost) => {
-    const { id, ...updatedpost } = updatedPost;
-    updateMutation.mutate({ id, updatedPost });
-    console.log(updatedpost);
+    // const { id, ...updatedpost } = updatedPost;
+    // updateMutation.mutate({ id, updatedPost });
+    console.log("from datajsx",updatedPost);
+    navigate("/form",{ state: { updatedPost } })
   };
 
   if (isLoading) return <div>Loading...</div>;
   if (error) return <div>Error: {error.message}</div>;
 
+
+
+
+
   return (
     <div className="app text-center">
+      <button onClick={()=>navigate("/form")} className="btn btn-primary">ADD DATA</button>
       {users && users.length > 0 ? (
         users.map((user) => (
           <div key={user.id} className="my-3">
